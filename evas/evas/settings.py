@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import xml.etree.ElementTree as ET
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +29,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CONFIG_FILE_TYPE_IS_XML = True          # true if config is xml ,
+                                        # false if config file is json
+                                        
+CONFIG_FILE_PATH = BASE_DIR.parent.joinpath('config'+('.xml' if CONFIG_FILE_TYPE_IS_XML else '.json'))
 
 # Application definition
 
@@ -73,14 +79,31 @@ WSGI_APPLICATION = 'evas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+if CONFIG_FILE_TYPE_IS_XML:
+    root = ET.parse(CONFIG_FILE_PATH).getroot()
+    database_config_root = root.find('Database')
+    database_config = {
+        'host' : database_config_root.find('host').text,
+        'port' : database_config_root.find('port').text,
+        'databasename' : database_config_root.find('databasename').text,
+        'username' : database_config_root.find('username').text,
+        'password' : database_config_root.find('password').text,
+    }
+    
+else:
+    with open(CONFIG_FILE_PATH, 'r') as config_file:
+        config_data = json.load(config_file)
+        database_config = config_data['ForecastApp']['Database']
+        
+
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'evas_forecast',
-        'USER': 'sa',
-        'PASSWORD': 'EasyAs123!',
-        'HOST': '127.0.0.1', # Can be an IP or hostname
-        'PORT': '1433',                          # Default MSSQL port
+        'NAME': database_config['databasename'],
+        'USER': database_config['username'],
+        'PASSWORD': database_config['password'],
+        'HOST': database_config['host'], # Can be an IP or hostname
+        'PORT': database_config['port'],                          # Default MSSQL port
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server', # Ensure this matches your installed driver version
             'extra_params': 'TrustServerCertificate=yes', # Often needed for remote connections without SSL certs

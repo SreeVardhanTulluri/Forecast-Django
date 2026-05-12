@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.forms.models import model_to_dict
 
 
 class Inventory(models.Model):
@@ -19,7 +20,15 @@ class Inventory(models.Model):
     siteno = models.IntegerField(db_column='SITENO', null=True, blank=True)
     lasttrace = models.CharField(db_column='LASTTRACE', max_length=20, null=True, blank=True)
     traceversion = models.IntegerField(db_column='TRACEVERSION')
-
+    
+    def __str__(self):
+        return f'Inventory of {self.clientno}'
+    
+    def get_data(self, *args : str):
+        if args is None: model_to_dict(self)
+        data = { arg : self.__dict__.get(arg,None) for arg in args}
+        return data
+    
     class Meta:
         managed = False
         db_table = '[EVASAPP].[INVENTORY_V]'
@@ -38,6 +47,14 @@ class InventoryDtl(models.Model):
     traceversion = models.IntegerField(db_column='TRACEVERSION')
     lasttrace = models.CharField(db_column='LASTTRACE', max_length=20, null=True, blank=True)
 
+    def __str__(self):
+        return f'Detailed Inventory of {self.clientno}'
+    
+    def get_data(self, *args : str):
+        if len(args) == 0: return model_to_dict(self)
+        data = { arg : self.__dict__.get(arg) for arg in args}
+        return data
+    
     class Meta:
         managed = False
         db_table = '[EVASAPP].[INVENTORYDTL_V]'

@@ -1,0 +1,19 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+<h1>Welcome</h1>
+<h2> Inventory Details </h2>
+<!-- /,<script src="sample.js"></script> -->
+<table >
+    <thead>
+        <td>Client No</td>
+        <td>Glory ID</td>
+        <td>Amount</td>
+    </thead>
+    {% for user in user_details %}
+    <tr onclick="location.href='detail/c{{user.clientno}}g{{user.gloryid}}'" class="table-row">
+        <td> {{user.clientno}}</td>
+        <td> {{user.gloryid}}</td>
+        <td> {{user.usamt}}</td>
+    </tr>
+    {% endfor %}
+</table>
