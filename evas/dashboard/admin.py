@@ -3,6 +3,9 @@ from django.contrib import admin
 # Register your models here.
 from .models import *
 
-admin.site.register(Inventory)
-admin.site.register(InventoryDtl)
+class inventoryAdmin(admin.ModelAdmin):
+    list_display = ("clientno", "gloryid")
+
+admin.site.register(Inventory,inventoryAdmin)
+admin.site.register(InventoryDtl,inventoryAdmin)
 admin.site.register(Mediamap)

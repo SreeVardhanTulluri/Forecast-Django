@@ -24,11 +24,6 @@ class Inventory(models.Model):
     def __str__(self):
         return f'Inventory of {self.clientno}'
     
-    def get_data(self, *args : str):
-        if args is None: model_to_dict(self)
-        data = { arg : self.__dict__.get(arg,None) for arg in args}
-        return data
-    
     class Meta:
         managed = False
         db_table = '[EVASAPP].[INVENTORY_V]'
@@ -49,11 +44,6 @@ class InventoryDtl(models.Model):
 
     def __str__(self):
         return f'Detailed Inventory of {self.clientno}'
-    
-    def get_data(self, *args : str):
-        if len(args) == 0: return model_to_dict(self)
-        data = { arg : self.__dict__.get(arg) for arg in args}
-        return data
     
     class Meta:
         managed = False
